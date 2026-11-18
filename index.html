@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#174b3e">
+<title>MIN33US Shop</title>
+<style>
+:root{--green:#174b3e;--mint:#e9f4ef;--bg:#f4f7f5;--ink:#17231f;--muted:#66736d;--line:#e0e8e3;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Noto Sans Myanmar",sans-serif}
+header{background:var(--green);color:white;padding:22px 18px 26px;border-radius:0 0 22px 22px}
+header h1{font-size:21px;margin:0 0 6px}header p{margin:0;color:#d5e8df;font-size:13px}
+main{max-width:680px;margin:auto;padding:14px}
+.summary{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:-8px;box-shadow:0 4px 16px #183c2a0b}
+.summary small,.muted{color:var(--muted)}.big{font-size:27px;font-weight:800;color:var(--green);margin-top:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stat{background:var(--mint);padding:12px;border-radius:12px}.stat b{display:block;font-size:18px;margin-top:4px}
+.tabs{display:flex;gap:8px;margin:16px 0 12px}.tab{flex:1;border:1px solid var(--line);background:white;padding:11px 6px;border-radius:11px;font-weight:700;color:var(--muted)}.tab.active{background:var(--green);color:white;border-color:var(--green)}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+h2{font-size:17px;margin:0 0 13px}label{display:block;font-size:13px;font-weight:700;margin:11px 0 5px}
+input,select{width:100%;padding:12px;border:1px solid #ccd8d1;border-radius:10px;font:inherit;background:white;color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;cursor:pointer;border:0;border-radius:11px;padding:12px 14px;font-weight:700}
+.primary{background:var(--green);color:white;width:100%;margin-top:14px}.secondary{background:var(--mint);color:var(--green)}.danger{background:#fff0ef;color:var(--red);padding:8px 10px;font-size:12px}
+.item,.sale{border-top:1px solid var(--line);padding:12px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}.item:first-child,.sale:first-child{border-top:0}
+.item strong,.sale strong{display:block}.item small,.sale small{color:var(--muted)}
+.amount{font-weight:800;text-align:right}.empty{text-align:center;padding:24px;color:var(--muted)}
+.hidden{display:none!important}.totalrow{display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line);font-weight:800}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}
+.note{font-size:12px;color:var(--muted);line-height:1.6}
+</style>
+</head>
+<body>
+<header><h1>🧾 MIN33US Shop</h1><p>အင်တာနက်မလိုဘဲ ဖုန်းထဲမှာ စာရင်းသိမ်းနိုင်ပါတယ်</p></header>
+<main>
+<section class="summary">
+ <small>ယနေ့ရောင်းရငွေ</small><div class="big" id="todayTotal">0 ကျပ်</div>
+ <div class="stats"><div class="stat"><small>ယနေ့ အရောင်းအကြိမ်</small><b id="todayCount">0</b></div><div class="stat"><small>စာရင်းထဲရှိ အရောင်းစုစုပေါင်း</small><b id="allTotal">0 ကျပ်</b></div></div>
+</section>
+<nav class="tabs">
+ <button class="tab active" data-tab="sell">အရောင်းသွင်း</button>
+ <button class="tab" data-tab="history">မှတ်တမ်း</button>
+ <button class="tab" data-tab="backup">သိမ်းဆည်းရန်</button>
+</nav>
+<section id="sell" class="panel">
+<h2>ပစ္စည်းအရောင်းသွင်းရန်</h2>
+<label>ပစ္စည်းအမည်</label><input id="product" placeholder="ဥပမာ - ဆန်၊ ဆီ၊ သကြား">
+<div class="grid">
+ <div><label>တစ်ခုဈေးနှုန်း (ကျပ်)</label><input id="price" type="number" min="0" inputmode="numeric" placeholder="5000"></div>
+ <div><label>အရေအတွက်</label><input id="qty" type="number" min="1" value="1" inputmode="numeric"></div>
+</div>
+<div class="totalrow" style="margin-top:14px"><span>ကျသင့်ငွေ</span><span id="lineTotal">0 ကျပ်</span></div>
+<button class="primary" id="addSale">အရောင်းစာရင်း သိမ်းမယ်</button>
+<p class="note">သိမ်းလိုက်သည်နှင့် ရက်စွဲ၊ အချိန်နှင့် ကျသင့်ငွေကို ဖုန်းထဲတွင် မှတ်တမ်းတင်ပါမည်။</p>
+</section>
+<section id="history" class="panel hidden">
+<h2>အရောင်းမှတ်တမ်း</h2>
+<label>ရက်စွဲအလိုက် ကြည့်ရန်</label><input type="date" id="filterDate">
+<div id="salesList"></div>
+</section>
+<section id="backup" class="panel hidden">
+<h2>စာရင်းအရန်သိမ်းရန်</h2>
+<p class="note">ဖုန်းပျောက်ခြင်း၊ Browser data ဖျက်မိခြင်းတို့ကြောင့် စာရင်းမပျောက်စေရန် အခါအားလျော်စွာ အရန်ဖိုင်ထုတ်ထားပါ။</p>
+<div class="actions"><button class="secondary" id="export">အရန်ဖိုင် ထုတ်မယ်</button><button class="secondary" id="csv">Excel စာရင်း ထုတ်မယ်</button></div>
+<label>အရန်ဖိုင် ပြန်ထည့်ရန် (JSON)</label><input type="file" id="restoreFile" accept=".json,application/json">
+<p class="note">မှတ်ချက် - ဒီ App သည် ဖုန်း၏ Browser ထဲတွင်သာ အချက်အလက်သိမ်းပါသည်။ Browser data မရှင်းပါနှင့်။ အရန်ဖိုင်ကို သီးခြားသိမ်းထားပါ။</p>
+</section>
+</main>
+<script>
+const KEY='shop_sales_offline_v1';
+let sales=[];
+try{sales=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(sales))sales=[]}catch(e){sales=[]}
+const $=id=>document.getElementById(id);
+const money=n=>Number(n||0).toLocaleString('en-US')+' ကျပ်';
+const dateKey=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(sales));render()}catch(e){alert('ဖုန်းထဲတွင် သိမ်းဆည်းရန် နေရာမလုံလောက်ပါ။ အရန်ဖိုင်ထုတ်ပြီး ပြန်ကြိုးစားပါ။')}};
+function render(){
+ const today=dateKey(new Date()), todays=sales.filter(s=>dateKey(s.date)===today);
+ $('todayTotal').textContent=money(todays.reduce((a,s)=>a+s.total,0));
+ $('todayCount').textContent=todays.length+' ကြိမ်';
+ $('allTotal').textContent=money(sales.reduce((a,s)=>a+s.total,0));
+ const f=$('filterDate').value;
+ const list=sales.filter(s=>!f||dateKey(s.date)===f).slice().reverse();
+ $('salesList').innerHTML=list.length?list.map(s=>`<div class="sale"><div><strong>${esc(s.name)}</strong><small>${new Date(s.date).toLocaleString('my-MM')} · ${Number(s.price).toLocaleString()} × ${s.qty}</small></div><div class="amount">${money(s.total)}<br><button class="danger" onclick="removeSale('${s.id}')">ဖျက်မယ်</button></div></div>`).join(''):'<div class="empty">အရောင်းမှတ်တမ်း မရှိသေးပါ</div>';
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function calc(){$('lineTotal').textContent=money((Number($('price').value)||0)*(Number($('qty').value)||0))}
+['price','qty'].forEach(id=>$(id).addEventListener('input',calc));
+$('addSale').onclick=()=>{
+ const name=$('product').value.trim(),price=Number($('price').value),qty=Number($('qty').value);
+ if(!name)return alert('ပစ္စည်းအမည် ထည့်ပေးပါ။');
+ if(!Number.isFinite(price)||price<=0)return alert('ဈေးနှုန်း မှန်ကန်စွာ ထည့်ပေးပါ။');
+ if(!Number.isInteger(qty)||qty<=0)return alert('အရေအတွက်ကို ၁ နှင့်အထက် ကိန်းပြည့်ထည့်ပါ။');
+ sales.push({id:String(Date.now())+Math.random().toString(16).slice(2),name,price,qty,total:price*qty,date:new Date().toISOString()});
+ save();$('product').value='';$('price').value='';$('qty').value=1;calc();alert('အရောင်းစာရင်း သိမ်းပြီးပါပြီ။');
+};
+window.removeSale=id=>{if(confirm('ဒီအရောင်းစာရင်းကို ဖျက်မှာ သေချာပါသလား။')){sales=sales.filter(s=>s.id!==id);save()}};
+$('filterDate').value=dateKey(new Date());$('filterDate').onchange=render;
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));['sell','history','backup'].forEach(id=>$(id).classList.toggle('hidden',id!==b.dataset.tab));render()});
+function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('export').onclick=()=>download('ဆိုင်အရောင်းအရန်.json',JSON.stringify(sales,null,2),'application/json');
+$('csv').onclick=()=>{const rows=[['ပစ္စည်းအမည်','ဈေးနှုန်း','အရေအတွက်','စုစုပေါင်း','ရက်စွဲ'],...sales.map(s=>[s.name,s.price,s.qty,s.total,new Date(s.date).toLocaleString()])];const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');download('ဆိုင်အရောင်းစာရင်း.csv',csv,'text/csv;charset=utf-8')};
+$('restoreFile').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data)||!data.every(s=>s.name&&Number.isFinite(Number(s.total))))throw Error();if(confirm('အရန်ဖိုင်ထဲက စာရင်းများကို လက်ရှိစာရင်းနဲ့ ပေါင်းထည့်မလား။')){sales=[...sales,...data.map(s=>({...s,id:String(Date.now())+Math.random().toString(16).slice(2)}))];save();alert('ပြန်ထည့်ပြီးပါပြီ။')}}catch(err){alert('အရန်ဖိုင် မှန်ကန်မှုမရှိပါ။')}e.target.value=''};
+render();
+</script>
+</body></html>
